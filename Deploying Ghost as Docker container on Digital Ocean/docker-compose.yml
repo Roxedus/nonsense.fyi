@@ -1,0 +1,46 @@
+---
+version: "2"
+
+services:
+  mariadb:
+    image: linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=MyVerySecretPassword
+      - TZ=Europe/London
+      - MYSQL_DATABASE=ghost
+      - MYSQL_USER=ghost
+      - MYSQL_PASSWORD=MyVerySecretSecondPassword
+    volumes:
+      - /opt/appdata/db:/config
+    restart: unless-stopped
+
+  blog:
+    image: ghost:3-alpine
+    container_name: blog
+    volumes:
+      - /opt/appdata/blog:/var/lib/ghost/content
+      - /opt/socket/:/opt/socket
+      - /opt/logs/ghost:/opt/logs/ghost
+    environment:
+      - TZ=Europe/London
+      - NODE_ENV=production
+      - url=https://nonsense.fyi
+      - server__socket__path=/opt/socket/ghost.socket
+      - server__socket__permissions=0666
+      - logging__path=/opt/logs/ghost/
+      - database__client=mysql
+      - database__connection__host=mariadb
+      - database__connection__user=ghost
+      - database__connection__password=MyVerySecretSecondPassword
+      - database__connection__database=ghost
+      - mail__transport=SMTP
+      - mail__options__service=Mailgun
+      - mail__options__host=smtp.eu.mailgun.org
+      - mail__options__port=465
+      - mail__options__secureConnection=true
+      - mail__options__auth__user=postmaster@nonsense.fyi
+      - mail__options__auth__pass=MyVerySecretThirdPassword
+    restart: unless-stopped
