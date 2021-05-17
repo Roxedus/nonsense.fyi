@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>Deploying Loki and Promtail together with the TIG stack</title>
+
+    <link rel="canonical" href="https://nonsense.fyi/deploying-loki-and-promtail-together-with-the-tig-stack/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Nonsense, for your Information" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Deploying Loki and Promtail together with the TIG stack" />
+    <meta property="og:description" content="How to set up Loki, Promtail, Telegraf and Grafana to visualize logs and system stats." />
+    <meta property="og:url" content="https://nonsense.fyi/deploying-loki-and-promtail-together-with-the-tig-stack/" />
+    <meta property="og:image" content="https://nonsense.fyi/content/images/2020/06/Untitled-1.png" />
+    <meta property="article:published_time" content="2020-06-02T02:22:12.000Z" />
+    <meta property="article:modified_time" content="2020-06-02T02:28:52.000Z" />
+    <meta property="article:tag" content="Automation" />
+    <meta property="article:tag" content="Loki" />
+    <meta property="article:tag" content="Grafana" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Deploying Loki and Promtail together with the TIG stack" />
+    <meta name="twitter:description" content="How to set up Loki, Promtail, Telegraf and Grafana to visualize logs and system stats." />
+    <meta name="twitter:url" content="https://nonsense.fyi/deploying-loki-and-promtail-together-with-the-tig-stack/" />
+    <meta name="twitter:image" content="https://nonsense.fyi/content/images/2020/06/Untitled-1.png" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Simen Røstvik" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Automation, Loki, Grafana" />
+    <meta name="twitter:site" content="@Roxedus" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="842" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Nonsense, for your Information",
+        "url": "https://nonsense.fyi/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://nonsense.fyi/content/images/2020/04/logo-2.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Simen Røstvik",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/db687ecb1c20468e2baf8c614cf4e711?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://nonsense.fyi/author/simen/",
+        "sameAs": []
+    },
+    "headline": "Deploying Loki and Promtail together with the TIG stack",
+    "url": "https://nonsense.fyi/deploying-loki-and-promtail-together-with-the-tig-stack/",
+    "datePublished": "2020-06-02T02:22:12.000Z",
+    "dateModified": "2020-06-02T02:28:52.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://nonsense.fyi/content/images/2020/06/Untitled-1.png",
+        "width": 2000,
+        "height": 842
+    },
+    "keywords": "Automation, Loki, Grafana",
+    "description": "How to set up Loki, Promtail, Telegraf and Grafana to visualize logs and system stats. ",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://nonsense.fyi/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 3.40" />
+    <link rel="alternate" type="application/rss+xml" title="Nonsense, for your Information" href="https://nonsense.fyi/rss/" />
+
+    <style amp-custom>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: #1292EE;
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: #000;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #dc0050;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    <script async custom-element="amp-anim" src="https://cdn.ampproject.org/v0/amp-anim-0.1.js"></script>
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="https://nonsense.fyi">
+                Nonsense, for your Information
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">Deploying Loki and Promtail together with the TIG stack</h1>
+                <section class="post-meta">
+                    Simen Røstvik -
+                    <time class="post-date" datetime="2020-06-02">02 Jun 2020</time>
+                </section>
+            </header>
+            <figure class="post-image">
+                <amp-img src="https://nonsense.fyi/content/images/2020/06/Untitled-1.png" width="600" height="340" layout="responsive"></amp-img>
+            </figure>
+            <section class="post-content">
+
+                <p>Now that I have set up this server as I want, the next step is to ensure it stays this way. One of the things I do to achieve this, is by setting up monitoring, and yes, it is very overkill for this setup. I went with a set of tools that I know, with some new additions which has been on my list of things to look into for a while, mainly <a href="https://github.com/grafana/loki/tree/master">Loki</a> and Promtail. They are both projects from <a href="https://github.com/grafana">Grafana</a> which are heavily focused on logs, both presenting them and parse them.</p><p>I'm basing this on the TIG(<a href="https://github.com/influxdata/telegraf">Telegraf</a>, <a href="https://github.com/influxdata/influxdb">InfluxDB</a>, <a href="https://github.com/grafana">Grafana</a>) stack, because I didn't want to spend time learning Prometheus, however implementing this took more time than it should've, Loki even got updated while setting it up. As I said earlier, I wanted to add some new tools in my "normal" stack. Just because Telegraf <em>can</em> do logs, does not mean it should. It can handle both syslog with a syslog-listener plugin, and docker-logs with the use of the docker socket, but Grafana has no good way of presenting them (I don't blame them). </p><hr></hr><h1 id="setting-up-influxdb">Setting up InfluxDB</h1><p>Setting up InfluxDB in docker is quite easy. This is all it takes.</p><pre><code class="language-yaml">  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    environment:
+      - TZ=${TZ}
+    ports:
+      - 127.0.0.1:8086:8086
+    volumes:
+      - /opt/appdata/influxdb/:/var/lib/influxdb
+    restart: unless-stopped</code></pre><hr></hr><h1 id="setting-up-telegraf">Setting up Telegraf</h1><p>Again, I choose to have a service running on the host, rather than in a container. I did this because Fail2Ban run on the host, having a container talking to a service on the host when the Telegraf plugin uses the command-line to interface with the service sounded like an unnecessary challenge.</p><p>My <code>telegraf.conf</code> is relatively small, only because I added the sections I were going to use, rather than using the one included which has all the options in it. Depending on your experience with Telegraf, it might look a bit complicated, especially the outputs. It is in fact not that advanced.</p><figure class="kg-card kg-code-card"><pre><code class="language-toml">[[outputs.influxdb]]
+  database = "telegraf" # required
+
+  retention_policy = ""
+  write_consistency = "any"
+
+  timeout = "5s"
+  [outputs.influxdb.tagdrop]
+    influx_database = ["docker", "nginx", "system", "web"]
+
+[[outputs.influxdb]]
+  database = "system" # required
+  retention_policy = ""
+  write_consistency = "any"
+  timeout = "5s"
+  tagexclude = ["influx_database"]
+  [outputs.influxdb.tagpass]
+    influx_database = ["system"]</code></pre><figcaption>telegraf.conf</figcaption></figure><p>This is mainly doing two things, to achieve the goal of diverting each type of metric into their own database in InfluxDB. Having them all in the same one isn't really a problem; it just makes it easier for <em>me</em>. To do this Telegraf has to add a tag to the metric it collects. </p><figure class="kg-card kg-code-card"><pre><code class="language-toml">[[inputs.cpu]]
+  percpu = true
+  totalcpu = true
+  collect_cpu_time = false
+  report_active = false
+  [inputs.cpu.tags]
+    influx_database = "system"</code></pre><figcaption>telegraf.conf</figcaption></figure><p>Here I tell Telegraf to <em>tag</em> all the metrics from the cpu input with the tag <code>influx_database</code> set to <code>system</code>. Telegraf can use the <code>tagpass</code> and <code>tagdrop</code> to further filter the metrics. We use <code>tagpass</code> to tell Telegraf which tags this output should allow. In the example I tell it to allow all metrics tagged with <code>influx_database</code> set to <code>system</code>. The <code>tagdrop</code> does the opposite, it tells Telegraf which tags it should <em>not</em> allow. In order to keep the output somewhat clean, I tell Telegraf to not pass the <code>influx_database</code> tag to InfluxDB. </p><p>Other than configuring nginx to show nginx_stub status on 127.0.0.1:8080, the rest of the telegraf.conf is pretty much stock.</p><pre><code class="language-nginx">server {
+    listen 127.0.0.1:8080;
+    location / {
+        stub_status   on;
+        access_log    off;
+    }
+}
+</code></pre><hr></hr><h1 id="setting-up-grafana">Setting up Grafana</h1><p>I noticed a while back, that you can configure Grafana purely by using <a href="https://images.roxedus.net/617d6/qEzEMopi34.gif">enviroment variables</a>, this is awesome because it can also be set up to not use the embedded sqlite database. Which means I don't need to give it a volume mount for persistent data, I did however give it a mount for using the socket instead of using http between nginx and Grafana. </p><pre><code class="language-yaml">  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    hostname: ${HOSTNAME}
+    user: "1000:33"
+    environment:
+      - TZ=${TZ}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Nonsense
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_DATABASE_URL=mysql://grafana:${GrafanaDB_PASS}@mariadb/grafana
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel,grafana-piechart-panel
+      - GF_SECURITY_ADMIN_USER=Roxedus
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SERVER_PROTOCOL=socket
+      - GF_SERVER_SOCKET=/opt/socket/grafana.socket
+      # - GF_SECURITY_ADMIN_PASSWORD=${SQL_ROOT}
+    volumes:
+      - /opt/socket/:/opt/socket</code></pre><p>I renamed the default organization in Grafana, which means that the default anonymous(guest) access break. I fix that by declaring which organization and role the anonymous user is attached to. Then I tell Grafana how to connect to the database, and what plugins it should install on start. Since I can, I also set the admin username and password, instead of updating the user after the fact. </p><p>Unlike Ghost, Grafana doesnt have a way to set permissions on the socket. Therefore, Grafana runs as my user, as part of the www-data group. It is dirty, but it works. </p><hr></hr><h1 id="reading-a-simple-logfile-with-promtail">Reading a simple logfile with Promtail</h1><p>The next part was getting Loki and Promtail set up. Oh boy what a task this was. I don't know why, but there isn't much content about this out there, if I were to guess people run the whole ELK stack. Which is way overkill for what I want to achieve here. The biggest hurdle personally was the fact that it was written in go, and therefore the config used some go-specific rules. Did you know that go's implementation of regex is very minimal? Or that the time-formatting is done without the notion of deliminators like YYYY-MM-DD? I for sure did not.</p><p>Getting the containers running was pretty simple, once you have downloaded the basic configuration files for <a href="https://github.com/grafana/loki/blob/v1.5.0/cmd/loki/loki-docker-config.yaml">Loki</a> and <a href="https://github.com/grafana/loki/blob/v1.5.0/cmd/promtail/promtail-docker-config.yaml">Promtail</a>. I choice to not use the default location inside the containers, I followed the practice of having all persistent data inn /config since I can override the <code>config.file</code> location with the command feature of docker. </p><pre><code class="language-yaml">  loki:
+    image: grafana/loki:${LOKI_VER}
+    hostname: ${HOSTNAME}
+    container_name: loki
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - /opt/appdata/loki/config:/config:ro
+    command: -config.file=/config/loki-config.yaml
+
+  promtail:
+    image: grafana/promtail:${LOKI_VER}
+    container_name: promtail
+    environment:
+      - TZ=${TZ}
+    depends_on:
+      - loki
+    volumes:
+      - /opt/appdata/promtail:/config:ro
+      - /opt/logs:/opt/logs:ro
+      - /var/log:/var/log:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    command: -config.file=/config/promtail-config.yaml</code></pre><p>My Loki service is not too far off from the example Loki provides. I added the hostname for the machine and set the TZ. I will come back to the logging part later. </p><p>For Promtail I gave it two volume-mounts for logs, where <code>/opt/logs</code> is where the logs from the applications I run with Docker are located (not to be confused with docker logs). The next thing I did was to change the <code>promtail-config.yaml</code> file to tell Promtail to read the logs in /opt. </p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+
+
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/**/**log
+      - targets:
+          - localhost
+        labels:
+          job: containers
+          __path__: /opt/logs/**/*log</code></pre><p>I could have added the <code>__path__</code> to the varlogs job, but I added it as a new job to be able to filter it out easily in Grafana. They would present themselves something like this:</p><figure class="kg-card kg-image-card"><amp-anim src="https://nonsense.fyi/content/images/2020/05/BS3X7J3NWY.gif" class="kg-image" width="1006" height="782" layout="responsive"></amp-anim></figure><p>As well as labeling the data with the job-name, it also labels it with the filename, which is neat when you want to focus on a specific logfile. If you look closely you can see that Loki didn't read the timestamp properly. This is something we can fix manually and depending on the original time-format its not that difficult, after getting over the hurdles that is go's time-formatting. The documentation does cover it, but it takes a few clicks to get there, so here is a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/timestamp.md">link</a>. There is a catch here though, especially if you know language like python. go's time-formater doesn't handle milliseconds with commas, there is an <a href="https://github.com/golang/go/issues/6189">issue</a> open about this from 2013.</p><p>You can still get the timestamp, but there is an additional step that need to be taken for that. I ran into that issue with the fail2ban logs, and I will walk you trough how I solved it. Here is a line from that log.</p><pre><code>2020-05-27 21:51:50,138 fail2ban.filter         [9474]: INFO    [sshd] Found 1.1.1.1 - 2020-05-27 21:51:50</code></pre><p>The first thing that had to be done was extracting the timestamp from the line. This is done with a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/regex.md">regex stage</a>. Note the that the backslashes needs to be escaped.</p><pre><code class="language-yaml">- regex:
+  expression: 
+    "(?P&lt;time&gt;\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{0,3}) 
+    (?P&lt;message&gt;fail2ban.*(?P&lt;pid&gt;\\[\\d*\\]: )(?P&lt;level&gt;[A-Z]{4,7}) .*)"</code></pre><p>I am also going to be extracting a few other things, like the message itself, the PID and the log-level, to use in other stages. You can look at the regex in action on <a href="https://regex101.com/r/qNaeoG/">regex101.com</a>.</p><p>Now I can use the content of <code>time</code> group as a variable in Promtail. The next step is to replace the comma with a dot, so Promtail can understand the time-format. This is done with a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/template.md">template step</a>. That is another thing worth looking into, go's template system. After reading about the replace function on the string function, it was pretty clear that it was the last piece of the puzzle I needed to solve before putting it all together. </p><pre><code class="language-yaml">- template:
+  source: time
+  template: '{{ Replace .Value "," "." -1 }}'</code></pre><p>Now we have the time variable available, because all the capture groups created with the regex step is exported for us to use. I pass it to the template. <code>.Value</code> is the value from the variable set as source. Then it replaces <code>,</code> with <code>.</code> for <code>-1</code> times, <code>-1</code> is the same as replace all. The output of this step is a new time variable, same name, new content. We can now define the <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/timestamp.md">timestamp </a>in the next stage. </p><pre><code class="language-yaml">- timestamp:
+  source: time
+  format: "2006-01-02 15:04:05.000"</code></pre><p>This is how you define a time-format in GO. This is it. It is a clever way to do it, it uses a set value for each component. The year it looks for is 2006, so it's either <code>06</code> or <code>2006</code>. The month has a few more options <code>1</code>, <code>01</code>, <code>Jan</code> or <code>January</code>. So, in a sense it is all pretty easy to read. All the possibilities for the components are in the documentation for the timestamp stage.</p><p>Now Promtail know what time the log was sent for. </p><p>I am not happy with the result; it has data I don't need, there is more I can do. If you look at the initial line from the log, it also has the time at the end, neither do I need the PID. I can fix this with another template step and a regex step. </p><pre><code class="language-yaml">- template:
+  source: message
+  template: '{{ Replace .Value .pid "" -1 }}'</code></pre><p>In this stage it reads the message extracted from the initial regex, then it replaces the content of the capture-group/label called <code>pid</code> with nothing.</p><pre><code class="language-yaml">- regex:
+  expression: '(?P&lt;message&gt;.*)(?: - \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})'
+  source: message</code></pre><p>This regex step uses the message passed from the previous template step and creates a new message capture-group, the important thing here is that it places the eventual timestamp in its own capture group, which is not a part of the message group. </p><p>If I  were to start Promtail now, it would still see the line as it is in the log. Promtail needs to be told what it should be passing along, so we use the <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/output.md">output stage</a>.</p><pre><code class="language-yaml">- output:
+   source: message</code></pre><p>However it also needs to be told what to apply all these steps to, so a final configuration to get Promtail to read and parse the Fail2Ban log would look something like this. </p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+      - match:
+          selector: '{filename=~".*fail2ban.log"}'
+          stages:
+            - regex:
+                expression:
+                  "(?P&lt;time&gt;\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{0,3})?\\D?
+                  (?P&lt;message&gt;fail2ban.*(?P&lt;pid&gt;\\[\\d*\\]: )(?P&lt;level&gt;[A-Z]{4,7}) .*
+                  (?:(?:\\[|Jail ')(?P&lt;jail&gt;\\D*)(?:\\]|'))?.*)"
+            - template:
+                source: message
+                template: '{{ Replace .Value .pid "" -1 }}'
+            - regex:
+                expression: '(?P&lt;message&gt;.*)(?: - \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})'
+                source: message
+            - template:
+                source: time
+                template: '{{ Replace .Value "," "." -1 }}'
+            - timestamp:
+                source: time
+                format: "2006-01-02 15:04:05.000"
+            - output:
+                source: message
+
+
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/**/**log
+      - targets:
+          - localhost
+        labels:
+          job: containers
+          __path__: /opt/logs/**/*log</code></pre><p>In order for Promtail to know where to apply these stages, it needs to match it to something. Grafana is then again presenting a new concept with Loki, <a href="https://github.com/grafana/loki/blob/master/docs/logql.md">LogQL</a>. It is an adaptation of Prometheus' query language, focused on logs. This is used in the selector, I kept mine simple. It is only matching against filenames ending with fail2ban.log, the filename includes paths, which is why there is a wildcard in front. </p><hr></hr><h1 id="reading-docker-logs-with-promtail">Reading docker-logs with Promtail</h1><p>Loki has a docker log-driver, which as the time of writing has a few deal breaking issues, mainly <a href="https://github.com/grafana/loki/issues/2017">#2017</a>. To work around this, I found that sending docker-logs to the journal works for my use case. The Promtail config for this was surprisingly easy, by just setting up the journal job example from Promtails documentation.</p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+  - job_name: journal
+    journal:
+      max_age: 12h
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ["__journal__systemd_unit"]
+        target_label: "unit"</code></pre><p>That will give us the journal from the host since <code>/var/log/journal</code> is mapped. </p><p>There is a few ways to tell docker to <a href="https://docs.docker.com/config/containers/logging/journald/">log to the journal</a>, however I am going to do it in my docker-compose. I simply just add a few lines to the containers I want to see in Grafana. </p><pre><code class="language-yaml">    logging:
+      driver: journald
+      options:
+        mode: non-blocking</code></pre><p>My Matomo instance would then look something like this.</p><pre><code class="language-yaml">  matomo:
+    image: matomo:fpm-alpine
+    container_name: matomo
+    logging:
+      driver: journald
+      options:
+        mode: non-blocking
+    depends_on:
+      - mariadb
+    volumes:
+      - /opt/appdata/matomo:/var/www/html
+      - /opt/logs/matomo:/logz</code></pre><p>Now I can see the logs from the Matomo container in Grafana, however it does not have a label I can use to sort out all the entries which does not come from the container. I can do that by adding a relabel action in the job-definition. Promtail presents all metadata from the journal with the <code>__journal_</code> label-prefix. This means that we can access the <code>CONTAINER_NAME</code> attribute docker adds to the logfile with the label <em><code>__journal_container_name</code></em>, so by adding a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/configuration.md#relabel_config">relabel_config</a> we can get the container name as a label in Promtail.</p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+  - job_name: journal
+    journal:
+      max_age: 12h
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ["__journal__systemd_unit"]
+        target_label: "unit"
+      - source_labels: ["__journal_container_name"]
+        target_label: "container"</code></pre><p>It will present the logs similar to this:</p><figure class="kg-card kg-image-card"><amp-anim src="https://nonsense.fyi/content/images/2020/06/5xNCB3iYhH.gif" class="kg-image" width="1078" height="802" layout="responsive"></amp-anim></figure><hr></hr><h1 id="putting-it-all-together">Putting it all together</h1><p>Now that I collect all the data I want, I can start creating dashboards. </p><p>This is one I created to keep track on the frequency of fail2ban entries, with some other web-based metrics. </p><p><a href="https://stats.nonsense.fyi/d/DHlm866Wz/web-traffic-deepdive">Web Traffic DeepDive</a></p>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+        <h3>Nonsense, for your Information</h3>
+            <p>Me, tech and other nonsense</p>
+        <p><a href="https://nonsense.fyi">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

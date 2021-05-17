@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Nonsense, for your Information]]></title><description><![CDATA[Me, tech and other nonsense]]></description><link>https://nonsense.fyi/</link><image><url>https://nonsense.fyi/favicon.png</url><title>Nonsense, for your Information</title><link>https://nonsense.fyi/</link></image><generator>Ghost 3.40</generator><lastBuildDate>Tue, 04 May 2021 04:15:03 GMT</lastBuildDate><atom:link href="https://nonsense.fyi/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Utteranc.es - GitHub driven comments]]></title><description><![CDATA[Adding GitHub driven comments to your Ghost blog]]></description><link>https://nonsense.fyi/utteranc-es-github-driven-comments/</link><guid isPermaLink="false">5eee9a638cc3bb00012ee237</guid><category><![CDATA[About the blog itself]]></category><dc:creator><![CDATA[Simen Røstvik]]></dc:creator><pubDate>Sun, 21 Jun 2020 00:08:30 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=2000&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ" medium="image"/><content:encoded><![CDATA[<img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ" alt="Utteranc.es - GitHub driven comments"><p>A few days I came over an article on how to run <a href="https://blog.damianflynn.com/USG-Wireguard/">WireGuard on a USG</a>, and skimmed trough it. At the bottom  I noticed some comment-section that caught my eye, it looked like GitHubs issue section, and sure enough, that's exactly what it is. <br><br>So how do you add it? The process is quite easy it is described in more detail on their <a href="https://utteranc.es/">site</a>. First you need to allow access to their bot on a repository you own. Then you need incorporate the necessary javascript, this can be somewhat tricky if you don't want it on the bottom of all your site, I don't want that so I set out to modify the theme, to have it where I want. It is a very simple modification, with one new line, and an additional file. </p><hr><p>The first thing I did was creating a new file, this one actually holds the script. This file is in the partials folder, so it ended up here <code>partials\utteranc.hbs</code>.</p><pre><code class="language-html">&lt;section class="utteranc"&gt;
+	&lt;script src="https://utteranc.es/client.js"
+            repo="Roxedus/nonsense.fyi"
+            issue-term="og:title"
+            label="PostComment"
+            theme="dark-blue"
+            crossorigin="anonymous"
+            async&gt;
+    &lt;/script&gt;
+ &lt;/section&gt;</code></pre><p>The other modification I did, was to edit the post file to actually load the script. I added it just above where the subscription box is. </p><pre><code class="language-html">            &lt;section class="post-full-content"&gt;
+                &lt;div class="post-content"&gt;
+                    {{content}}
+                &lt;/div&gt;
+            &lt;/section&gt;
+
+            {{!-- Custom Comments--}}
+            {{&gt; utteranc}}
+
+            {{!-- Email subscribe form at the bottom of the page --}}
+            {{#if @labs.members}}
+            {{&gt; subscribe-form}}
+            {{/if}}</code></pre><hr><p>I created a <a href="https://github.com/Roxedus/nonsense.fyi/releases/tag/3.0.12">release</a> on the GitHub repo with the final zip. </p>]]></content:encoded></item><item><title><![CDATA[Deploying Loki and Promtail together with the TIG stack]]></title><description><![CDATA[How to set up Loki, Promtail, Telegraf and Grafana to visualize logs and system stats. ]]></description><link>https://nonsense.fyi/deploying-loki-and-promtail-together-with-the-tig-stack/</link><guid isPermaLink="false">5ec87a29949f5c00014a511d</guid><category><![CDATA[Automation]]></category><category><![CDATA[Loki]]></category><category><![CDATA[Grafana]]></category><dc:creator><![CDATA[Simen Røstvik]]></dc:creator><pubDate>Tue, 02 Jun 2020 02:22:12 GMT</pubDate><media:content url="https://nonsense.fyi/content/images/2020/06/Untitled-1.png" medium="image"/><content:encoded><![CDATA[<img src="https://nonsense.fyi/content/images/2020/06/Untitled-1.png" alt="Deploying Loki and Promtail together with the TIG stack"><p>Now that I have set up this server as I want, the next step is to ensure it stays this way. One of the things I do to achieve this, is by setting up monitoring, and yes, it is very overkill for this setup. I went with a set of tools that I know, with some new additions which has been on my list of things to look into for a while, mainly <a href="https://github.com/grafana/loki/tree/master">Loki</a> and Promtail. They are both projects from <a href="https://github.com/grafana">Grafana</a> which are heavily focused on logs, both presenting them and parse them.</p><p>I'm basing this on the TIG(<a href="https://github.com/influxdata/telegraf">Telegraf</a>, <a href="https://github.com/influxdata/influxdb">InfluxDB</a>, <a href="https://github.com/grafana">Grafana</a>) stack, because I didn't want to spend time learning Prometheus, however implementing this took more time than it should've, Loki even got updated while setting it up. As I said earlier, I wanted to add some new tools in my "normal" stack. Just because Telegraf <em>can</em> do logs, does not mean it should. It can handle both syslog with a syslog-listener plugin, and docker-logs with the use of the docker socket, but Grafana has no good way of presenting them (I don't blame them). </p><hr><h1 id="setting-up-influxdb">Setting up InfluxDB</h1><p>Setting up InfluxDB in docker is quite easy. This is all it takes.</p><pre><code class="language-yaml">  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    environment:
+      - TZ=${TZ}
+    ports:
+      - 127.0.0.1:8086:8086
+    volumes:
+      - /opt/appdata/influxdb/:/var/lib/influxdb
+    restart: unless-stopped</code></pre><hr><h1 id="setting-up-telegraf">Setting up Telegraf</h1><p>Again, I choose to have a service running on the host, rather than in a container. I did this because Fail2Ban run on the host, having a container talking to a service on the host when the Telegraf plugin uses the command-line to interface with the service sounded like an unnecessary challenge.</p><p>My <code>telegraf.conf</code> is relatively small, only because I added the sections I were going to use, rather than using the one included which has all the options in it. Depending on your experience with Telegraf, it might look a bit complicated, especially the outputs. It is in fact not that advanced.</p><figure class="kg-card kg-code-card"><pre><code class="language-toml">[[outputs.influxdb]]
+  database = "telegraf" # required
+
+  retention_policy = ""
+  write_consistency = "any"
+
+  timeout = "5s"
+  [outputs.influxdb.tagdrop]
+    influx_database = ["docker", "nginx", "system", "web"]
+
+[[outputs.influxdb]]
+  database = "system" # required
+  retention_policy = ""
+  write_consistency = "any"
+  timeout = "5s"
+  tagexclude = ["influx_database"]
+  [outputs.influxdb.tagpass]
+    influx_database = ["system"]</code></pre><figcaption>telegraf.conf</figcaption></figure><p>This is mainly doing two things, to achieve the goal of diverting each type of metric into their own database in InfluxDB. Having them all in the same one isn't really a problem; it just makes it easier for <em>me</em>. To do this Telegraf has to add a tag to the metric it collects. </p><figure class="kg-card kg-code-card"><pre><code class="language-toml">[[inputs.cpu]]
+  percpu = true
+  totalcpu = true
+  collect_cpu_time = false
+  report_active = false
+  [inputs.cpu.tags]
+    influx_database = "system"</code></pre><figcaption>telegraf.conf</figcaption></figure><p>Here I tell Telegraf to <em>tag</em> all the metrics from the cpu input with the tag <code>influx_database</code> set to <code>system</code>. Telegraf can use the <code>tagpass</code> and <code>tagdrop</code> to further filter the metrics. We use <code>tagpass</code> to tell Telegraf which tags this output should allow. In the example I tell it to allow all metrics tagged with <code>influx_database</code> set to <code>system</code>. The <code>tagdrop</code> does the opposite, it tells Telegraf which tags it should <em>not</em> allow. In order to keep the output somewhat clean, I tell Telegraf to not pass the <code>influx_database</code> tag to InfluxDB. </p><p>Other than configuring nginx to show nginx_stub status on 127.0.0.1:8080, the rest of the telegraf.conf is pretty much stock.</p><pre><code class="language-nginx">server {
+    listen 127.0.0.1:8080;
+    location / {
+        stub_status   on;
+        access_log    off;
+    }
+}
+</code></pre><hr><h1 id="setting-up-grafana">Setting up Grafana</h1><p>I noticed a while back, that you can configure Grafana purely by using <a href="https://images.roxedus.net/617d6/qEzEMopi34.gif">enviroment variables</a>, this is awesome because it can also be set up to not use the embedded sqlite database. Which means I don't need to give it a volume mount for persistent data, I did however give it a mount for using the socket instead of using http between nginx and Grafana. </p><pre><code class="language-yaml">  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    hostname: ${HOSTNAME}
+    user: "1000:33"
+    environment:
+      - TZ=${TZ}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Nonsense
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_DATABASE_URL=mysql://grafana:${GrafanaDB_PASS}@mariadb/grafana
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel,grafana-piechart-panel
+      - GF_SECURITY_ADMIN_USER=Roxedus
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SERVER_PROTOCOL=socket
+      - GF_SERVER_SOCKET=/opt/socket/grafana.socket
+      # - GF_SECURITY_ADMIN_PASSWORD=${SQL_ROOT}
+    volumes:
+      - /opt/socket/:/opt/socket</code></pre><p>I renamed the default organization in Grafana, which means that the default anonymous(guest) access break. I fix that by declaring which organization and role the anonymous user is attached to. Then I tell Grafana how to connect to the database, and what plugins it should install on start. Since I can, I also set the admin username and password, instead of updating the user after the fact. </p><p>Unlike Ghost, Grafana doesnt have a way to set permissions on the socket. Therefore, Grafana runs as my user, as part of the www-data group. It is dirty, but it works. </p><hr><h1 id="reading-a-simple-logfile-with-promtail">Reading a simple logfile with Promtail</h1><p>The next part was getting Loki and Promtail set up. Oh boy what a task this was. I don't know why, but there isn't much content about this out there, if I were to guess people run the whole ELK stack. Which is way overkill for what I want to achieve here. The biggest hurdle personally was the fact that it was written in go, and therefore the config used some go-specific rules. Did you know that go's implementation of regex is very minimal? Or that the time-formatting is done without the notion of deliminators like YYYY-MM-DD? I for sure did not.</p><p>Getting the containers running was pretty simple, once you have downloaded the basic configuration files for <a href="https://github.com/grafana/loki/blob/v1.5.0/cmd/loki/loki-docker-config.yaml">Loki</a> and <a href="https://github.com/grafana/loki/blob/v1.5.0/cmd/promtail/promtail-docker-config.yaml">Promtail</a>. I choice to not use the default location inside the containers, I followed the practice of having all persistent data inn /config since I can override the <code>config.file</code> location with the command feature of docker. </p><pre><code class="language-yaml">  loki:
+    image: grafana/loki:${LOKI_VER}
+    hostname: ${HOSTNAME}
+    container_name: loki
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - /opt/appdata/loki/config:/config:ro
+    command: -config.file=/config/loki-config.yaml
+
+  promtail:
+    image: grafana/promtail:${LOKI_VER}
+    container_name: promtail
+    environment:
+      - TZ=${TZ}
+    depends_on:
+      - loki
+    volumes:
+      - /opt/appdata/promtail:/config:ro
+      - /opt/logs:/opt/logs:ro
+      - /var/log:/var/log:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    command: -config.file=/config/promtail-config.yaml</code></pre><p>My Loki service is not too far off from the example Loki provides. I added the hostname for the machine and set the TZ. I will come back to the logging part later. </p><p>For Promtail I gave it two volume-mounts for logs, where <code>/opt/logs</code> is where the logs from the applications I run with Docker are located (not to be confused with docker logs). The next thing I did was to change the <code>promtail-config.yaml</code> file to tell Promtail to read the logs in /opt. </p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+
+
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/**/**log
+      - targets:
+          - localhost
+        labels:
+          job: containers
+          __path__: /opt/logs/**/*log</code></pre><p>I could have added the <code>__path__</code> to the varlogs job, but I added it as a new job to be able to filter it out easily in Grafana. They would present themselves something like this:</p><figure class="kg-card kg-image-card"><img src="https://nonsense.fyi/content/images/2020/05/BS3X7J3NWY.gif" class="kg-image" alt="Deploying Loki and Promtail together with the TIG stack"></figure><p>As well as labeling the data with the job-name, it also labels it with the filename, which is neat when you want to focus on a specific logfile. If you look closely you can see that Loki didn't read the timestamp properly. This is something we can fix manually and depending on the original time-format its not that difficult, after getting over the hurdles that is go's time-formatting. The documentation does cover it, but it takes a few clicks to get there, so here is a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/timestamp.md">link</a>. There is a catch here though, especially if you know language like python. go's time-formater doesn't handle milliseconds with commas, there is an <a href="https://github.com/golang/go/issues/6189">issue</a> open about this from 2013.</p><p>You can still get the timestamp, but there is an additional step that need to be taken for that. I ran into that issue with the fail2ban logs, and I will walk you trough how I solved it. Here is a line from that log.</p><pre><code>2020-05-27 21:51:50,138 fail2ban.filter         [9474]: INFO    [sshd] Found 1.1.1.1 - 2020-05-27 21:51:50</code></pre><p>The first thing that had to be done was extracting the timestamp from the line. This is done with a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/regex.md">regex stage</a>. Note the that the backslashes needs to be escaped.</p><pre><code class="language-yaml">- regex:
+  expression: 
+    "(?P&lt;time&gt;\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{0,3}) 
+    (?P&lt;message&gt;fail2ban.*(?P&lt;pid&gt;\\[\\d*\\]: )(?P&lt;level&gt;[A-Z]{4,7}) .*)"</code></pre><p>I am also going to be extracting a few other things, like the message itself, the PID and the log-level, to use in other stages. You can look at the regex in action on <a href="https://regex101.com/r/qNaeoG/">regex101.com</a>.</p><p>Now I can use the content of <code>time</code> group as a variable in Promtail. The next step is to replace the comma with a dot, so Promtail can understand the time-format. This is done with a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/template.md">template step</a>. That is another thing worth looking into, go's template system. After reading about the replace function on the string function, it was pretty clear that it was the last piece of the puzzle I needed to solve before putting it all together. </p><pre><code class="language-yaml">- template:
+  source: time
+  template: '{{ Replace .Value "," "." -1 }}'</code></pre><p>Now we have the time variable available, because all the capture groups created with the regex step is exported for us to use. I pass it to the template. <code>.Value</code> is the value from the variable set as source. Then it replaces <code>,</code> with <code>.</code> for <code>-1</code> times, <code>-1</code> is the same as replace all. The output of this step is a new time variable, same name, new content. We can now define the <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/timestamp.md">timestamp </a>in the next stage. </p><pre><code class="language-yaml">- timestamp:
+  source: time
+  format: "2006-01-02 15:04:05.000"</code></pre><p>This is how you define a time-format in GO. This is it. It is a clever way to do it, it uses a set value for each component. The year it looks for is 2006, so it's either <code>06</code> or <code>2006</code>. The month has a few more options <code>1</code>, <code>01</code>, <code>Jan</code> or <code>January</code>. So, in a sense it is all pretty easy to read. All the possibilities for the components are in the documentation for the timestamp stage.</p><p>Now Promtail know what time the log was sent for. </p><p>I am not happy with the result; it has data I don't need, there is more I can do. If you look at the initial line from the log, it also has the time at the end, neither do I need the PID. I can fix this with another template step and a regex step. </p><pre><code class="language-yaml">- template:
+  source: message
+  template: '{{ Replace .Value .pid "" -1 }}'</code></pre><p>In this stage it reads the message extracted from the initial regex, then it replaces the content of the capture-group/label called <code>pid</code> with nothing.</p><pre><code class="language-yaml">- regex:
+  expression: '(?P&lt;message&gt;.*)(?: - \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})'
+  source: message</code></pre><p>This regex step uses the message passed from the previous template step and creates a new message capture-group, the important thing here is that it places the eventual timestamp in its own capture group, which is not a part of the message group. </p><p>If I  were to start Promtail now, it would still see the line as it is in the log. Promtail needs to be told what it should be passing along, so we use the <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/stages/output.md">output stage</a>.</p><pre><code class="language-yaml">- output:
+   source: message</code></pre><p>However it also needs to be told what to apply all these steps to, so a final configuration to get Promtail to read and parse the Fail2Ban log would look something like this. </p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+      - match:
+          selector: '{filename=~".*fail2ban.log"}'
+          stages:
+            - regex:
+                expression:
+                  "(?P&lt;time&gt;\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{0,3})?\\D?
+                  (?P&lt;message&gt;fail2ban.*(?P&lt;pid&gt;\\[\\d*\\]: )(?P&lt;level&gt;[A-Z]{4,7}) .*
+                  (?:(?:\\[|Jail ')(?P&lt;jail&gt;\\D*)(?:\\]|'))?.*)"
+            - template:
+                source: message
+                template: '{{ Replace .Value .pid "" -1 }}'
+            - regex:
+                expression: '(?P&lt;message&gt;.*)(?: - \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})'
+                source: message
+            - template:
+                source: time
+                template: '{{ Replace .Value "," "." -1 }}'
+            - timestamp:
+                source: time
+                format: "2006-01-02 15:04:05.000"
+            - output:
+                source: message
+
+
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/**/**log
+      - targets:
+          - localhost
+        labels:
+          job: containers
+          __path__: /opt/logs/**/*log</code></pre><p>In order for Promtail to know where to apply these stages, it needs to match it to something. Grafana is then again presenting a new concept with Loki, <a href="https://github.com/grafana/loki/blob/master/docs/logql.md">LogQL</a>. It is an adaptation of Prometheus' query language, focused on logs. This is used in the selector, I kept mine simple. It is only matching against filenames ending with fail2ban.log, the filename includes paths, which is why there is a wildcard in front. </p><hr><h1 id="reading-docker-logs-with-promtail">Reading docker-logs with Promtail</h1><p>Loki has a docker log-driver, which as the time of writing has a few deal breaking issues, mainly <a href="https://github.com/grafana/loki/issues/2017">#2017</a>. To work around this, I found that sending docker-logs to the journal works for my use case. The Promtail config for this was surprisingly easy, by just setting up the journal job example from Promtails documentation.</p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+  - job_name: journal
+    journal:
+      max_age: 12h
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ["__journal__systemd_unit"]
+        target_label: "unit"</code></pre><p>That will give us the journal from the host since <code>/var/log/journal</code> is mapped. </p><p>There is a few ways to tell docker to <a href="https://docs.docker.com/config/containers/logging/journald/">log to the journal</a>, however I am going to do it in my docker-compose. I simply just add a few lines to the containers I want to see in Grafana. </p><pre><code class="language-yaml">    logging:
+      driver: journald
+      options:
+        mode: non-blocking</code></pre><p>My Matomo instance would then look something like this.</p><pre><code class="language-yaml">  matomo:
+    image: matomo:fpm-alpine
+    container_name: matomo
+    logging:
+      driver: journald
+      options:
+        mode: non-blocking
+    depends_on:
+      - mariadb
+    volumes:
+      - /opt/appdata/matomo:/var/www/html
+      - /opt/logs/matomo:/logz</code></pre><p>Now I can see the logs from the Matomo container in Grafana, however it does not have a label I can use to sort out all the entries which does not come from the container. I can do that by adding a relabel action in the job-definition. Promtail presents all metadata from the journal with the <code>__journal_</code> label-prefix. This means that we can access the <code>CONTAINER_NAME</code> attribute docker adds to the logfile with the label <em><code>__journal_container_name</code></em>, so by adding a <a href="https://github.com/grafana/loki/blob/v1.5.0/docs/clients/promtail/configuration.md#relabel_config">relabel_config</a> we can get the container name as a label in Promtail.</p><pre><code class="language-yaml">server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:
+  - job_name: journal
+    journal:
+      max_age: 12h
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ["__journal__systemd_unit"]
+        target_label: "unit"
+      - source_labels: ["__journal_container_name"]
+        target_label: "container"</code></pre><p>It will present the logs similar to this:</p><figure class="kg-card kg-image-card"><img src="https://nonsense.fyi/content/images/2020/06/5xNCB3iYhH.gif" class="kg-image" alt="Deploying Loki and Promtail together with the TIG stack"></figure><hr><h1 id="putting-it-all-together">Putting it all together</h1><p>Now that I collect all the data I want, I can start creating dashboards. </p><p>This is one I created to keep track on the frequency of fail2ban entries, with some other web-based metrics. </p><p><a href="https://stats.nonsense.fyi/d/DHlm866Wz/web-traffic-deepdive">Web Traffic DeepDive</a></p>]]></content:encoded></item><item><title><![CDATA[Talk with me!]]></title><description><![CDATA[I have created a Discord server!]]></description><link>https://nonsense.fyi/my-discord/</link><guid isPermaLink="false">5ecf15b08cc3bb00012ee089</guid><category><![CDATA[About the blog itself]]></category><dc:creator><![CDATA[Simen Røstvik]]></dc:creator><pubDate>Thu, 28 May 2020 01:41:42 GMT</pubDate><media:content url="https://nonsense.fyi/content/images/2020/05/f7a4131e47f50b48b3f85f73c47ff1dc.png" medium="image"/><content:encoded><![CDATA[<img src="https://nonsense.fyi/content/images/2020/05/f7a4131e47f50b48b3f85f73c47ff1dc.png" alt="Talk with me!"><p>I have created a <a href="https://nonsense.fyi/discord">Discord server</a>, due to Ghosts lack of  comment support out-of-the-box. </p>]]></content:encoded></item><item><title><![CDATA[Syncing gist code-snippets with a GitHub repository]]></title><description><![CDATA[How to sync a git repository of code to posts on your blog!]]></description><link>https://nonsense.fyi/gist-to-github/</link><guid isPermaLink="false">5ea68207ed3ca20001a27aaa</guid><category><![CDATA[Automation]]></category><dc:creator><![CDATA[Simen Røstvik]]></dc:creator><pubDate>Mon, 27 Apr 2020 14:45:48 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=2000&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ" medium="image"/><content:encoded><![CDATA[<img src="https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ" alt="Syncing gist code-snippets with a GitHub repository"><p>When I was looking for a solution for this blog, I had few demands, one of them was a integration with a git host, preferably a self-hosted one. I asked if someone knew of a solution like this, the few replies I got were negative. <a href="https://twitter.com/IronicBadger">Alex</a> over at the selfhosted.show Discord server found my idea intriguing, so my search continued.</p><p>I had given up on finding a platform with this integration, so I started looking for a general blogging platform. I already knew about Ghost, and it had to be good to be mentioned on the selfhosted podcast multiple times. However, I had not fully decided yet, I did even look at the (in)famous Wordpress setup. Ghost was still compelling, even after reading some posts from people migrating away from Ghost, my only takeaway from this was the lack of a native comment integration.</p><p>Now, fastforward a day and I have set up Ghost. I was learning the menus, as one should after getting something new and fancy and I noticed a middle-ground, Gist embeds! If you don't know what Gist is, it is GitHub’s solution for snippets that does not warrant a full repository.</p><p>I had ideas!</p><hr><p>So there was some vital research which needed to be done.<br>* Could I use one gist with multiple files/snipptes?<br>* Could I make them look not terrible with my theme?<br>* Is there a easy API for Gists I could use?</p><p>A quick <a href="https://stackoverflow.com/questions/14206307/how-do-i-embed-a-single-file-from-a-github-gist-with-the-new-gist-interface">google search</a> revealed that I could in fact embed a specific file, by just adding the parameter <code>?file=myFile.blah</code> to the emded-url.<br>So, how do I stop the embed burning your eyes on my current theme on Ghost? There is always CSS, I know how it works, I just do not have any sense of making colours match and look good together. Turns out there are already stylesheets out there for Gist embeds, I choose one from <a href="https://lonekorean.github.io/gist-syntax-themes/">this list</a> that also matched one of the ones integrated in Prism.js.<br>It was time for getting technical. I was looking at GitHub’s documentation for the Gist API and found it, well, overkill. I just wanted to sync; I did not want to handle all the extra fuzz. </p><p>I was back to tinkering.</p><p>I wrote my first blogpost and experimented on how I wanted to attack this git-repo sync thingy. I looked at Ghosts API to see if I could <em>easily</em> grab a codeblock form the <code>/content</code> endpoint, it looked doable, but I already had done all this research and recon on the Gist approach that I continued looking into that idea.</p><hr><p>While my initial though was going to be utilizing bash for this. I quickly realized that I either lacked the expertise, or that I had chosen the wrong tool for the job. There is this great book called “Automate the Boring Stuff with Python”, which I haven’t read, that came to mind. I started writing a python script which reads the content of a folder. I was still reading the Gist API but ended up on a tangent. I was not happy with how my Gist was “named” so I went looking for a way to rename it. While pressing a lot of different buttons, I found out that a Gist is actually a git repository. Which meant that I could probably use something to reference the gist in another repository. I spent a few minutes looking at sub-modules but discovered that the push flow was not the way I wanted to go. Shortly after I thought about referencing the Gist trough a file, which is the way I ended up with.</p><p>This script evolved drastically throughout the night, while it ended up on approximately a hundred lines, I went trough a lot of trial and error. The workflow I resulted in was temporarily cloning the gist repository to the disk, then copy all the files over to that directory before committing. I’m quite happy with the result, it’s not much, but it’s honest work. While you can run this script locally, I adapted it to run as a GitHub Action, meaning I can do edits on a computer without all the setup required for python.</p><p>There is definitely room for improvement, but it should work good enough for my use-case. I can see myself revisiting this script in the future while making better suited for use by others.</p><hr><h2 id="the-code-">The code!</h2><p>Now that's enough small talk, let's talk about the result. </p><p>This it the Python code I ended up with, it supports multiple directories, hence multiple Gists. The file connecting the folder to a gist is the <code>.gist</code> file, this has to to be formatted as <code>user/gist-id</code> where the ID is the string you see in your browsers address bar after creating the gist. The name of the folder doesn't really matter, but for making it easier for me to manage, I choose to call it the same as the blogpost. </p><!--kg-card-begin: html--><script src="https://gist.github.com/Roxedus/a5b9276238c958f09c891d16dc2ad662.js?file=push.py"></script><!--kg-card-end: html--><p>As I mentioned earlier, I adapted it to work with GitHub actions. This change mostly consisted of handling the credential for the git push. I created a <a href="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line">personal access</a> token for my GitHub account with the scope of <code>gist</code>, and added it as a secret in my repository called <code>GIST_TOKEN</code>. In the action I set the environment variables for the password, email and username I wanted to attach to the commit. </p><!--kg-card-begin: html--><script src="https://gist.github.com/Roxedus/a5b9276238c958f09c891d16dc2ad662.js?file=sync.yml"></script><!--kg-card-end: html--><h3 id="where-is-this-magic-stored">Where is this magic stored?</h3><p>I have put all my code in a GitHub repository for everyone to see!</p><!--kg-card-begin: html--><div class="github-card" data-github="Roxedus/nonsense.fyi" data-width="400" data-height data-theme="medium"></div>
+<script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+<!--kg-card-end: html-->]]></content:encoded></item><item><title><![CDATA[Deploying Ghost as a Docker container on Digital Ocean]]></title><description><![CDATA[My journey in setting up, and writing my first blogpost]]></description><link>https://nonsense.fyi/deploying-ghost-as-docker-container-on-digital-ocean/</link><guid isPermaLink="false">5ea49724ed3ca20001a276d5</guid><category><![CDATA[About the blog itself]]></category><dc:creator><![CDATA[Simen Røstvik]]></dc:creator><pubDate>Sun, 26 Apr 2020 00:41:53 GMT</pubDate><media:content url="https://nonsense.fyi/content/images/2020/04/ghost.png" medium="image"/><content:encoded><![CDATA[<img src="https://nonsense.fyi/content/images/2020/04/ghost.png" alt="Deploying Ghost as a Docker container on Digital Ocean"><p><em>Suggested listen while reading</em></p><figure class="kg-card kg-embed-card"><iframe width="100%" height="400" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F345582787&show_artwork=true"></iframe></figure><p><br>After years and years of reading blogs to figure out where I went wrong, it’s time for me to share my knowledge with the world, and improve my writing skills along the way.</p><p><br>The process of creating this Ghost instance made me dabble in a few things that I’ve never touched before. Some of these are Digital Ocean and networking on a VPS. I could probably have used DO's own firewall offering, however, I felt like I needed to get some real UFW experience.</p><blockquote>But Mr., Docker and UFW are not friends!</blockquote><p>I must agree with this, however, I discovered that Ghost can be exposed over a <a href="https://ghost.org/docs/concepts/config/#unix-sockets">Unix socket</a>, which made my life that much easier. This allowed me drop "plan B", running Nginx in a container. <br>While there is nothing wrong about running Nginx in a container, the image I use elsewhere has some drawbacks. I always planned on using Nginx on the host itself for multiple reasons, the biggest of them was Fail2Ban. My hard-on for F2B has been up since I implemented it for my Organizr install following this <a href="https://technicalramblings.com/blog/banning-with-http-auth-and-fail2ban/">guide</a>. <br>Another reason for choosing a native Nginx service is certificates. While <code>linuxserver/letsencrypt</code> does allow for letsencrypt certificates it only creates one. Meaning that if I were to host another domain on it, the certificate would show both domains due to <a href="https://en.wikipedia.org/wiki/Server_Name_Indication">SNI</a>.<br><br>Now that I have planned my setup, let’s move on to implementing it.</p><h2 id="getting-the-vps-ready">Getting the VPS ready</h2><p>I am not going to cover the creation of the droplet, but what you need to know is that, at the time of writing, it is running on the cheapest droplet.</p><p>When the droplet was finished setting up, I connected to it with the keypair I generated when creating the droplet (I basically just followed DO's excellent <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04">Initial Server Setup</a> guide). Once I was done copying the .ssh files I did the mandatory <code>sudo apt upgrade &amp;&amp; sudo apt update -y</code>. Then it was time for the fun part! Installing Docker and Docker Compose.<br><br>I am lazy. I am saying that because Docker offers an easy way to install it, and I am using it. I used the <a href="https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script">convenience script</a> to get up and running, which this method has a risk, which is greatly covered in their docs. Now that I shamelessly installed Docker the lazy way it was time for compose, with another <a href="https://docs.docker.com/compose/install/">one-liner</a>. </p><h2 id="setting-up-ghost">Setting up Ghost</h2><p>Now that I have my prerequisites, I can start building my compose-file.</p><p>I went with MariaDB as a database rather than SQLite, because, well it's SQLite. I choose <code>linuxserver/mariadb</code> because that's an image I have worked with previously and it also sets up a database on the initial start-up, which is nice. The environment variables are set according to the <a href="https://docs.linuxserver.io/images/docker-mariadb">documentation </a>for the container.</p><p>I am utilizing docker networking for the Ghost container to speak with the database as it's easier and more secure (rather than mapping the port from the database to the host). A better explanation can be found here: <a href="https://blog.linuxserver.io/2017/10/17/using-docker-networks-for-better-inter-container-communication/">linuxserver.io</a>.<br>This is where I get to use the socket provided by Ghost. The important parts for this to work is mapping the socket to a folder on the host. This can be done with <code>-v /opt/socket/:/opt/socket</code>. Next thing I need is to tell Ghost to create, and use, this socket. I do that with <code>-e server__socket__path=/opt/socket/ghost.socket</code>. This worked, but only for a while, because Ghost creates the socket with a user that Nginx can’t read. So, I had to define which permissions Ghost should create the socket with, and this is luckily something that Ghost supports out of the box, so adding <code>-e server__socket__permissions=0666</code> solved that. <br><br>I set up Mailgun as an e-mail provider, as suggested by Ghost themselves. </p><p><em>Quick tip: create the directories before doing docker-compose up</em></p><!--kg-card-begin: html--><script src="https://gist.github.com/Roxedus/d400fe30e5964d253b7d0696ea1abd46.js?file=docker-compose.yml"></script><!--kg-card-end: html--><h2 id="installing-nginx-and-generating-a-certificate-with-certbot">Installing Nginx and generating a certificate with certbot</h2><p>I have already stated that I'm lazy, so instead of me repeating DO's guide, I am just linking it for you to follow: <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04">Here</a>. Don't worry, I will cover the final Nginx config later in this post.</p><p>Now that Nginx is up and running, it's time to get cryptic. I am of course, speaking of SSL.<br>As mentioned earlier, I am going to use Let's-encrypt as a certificate authority, which is easily done with certbot. You can get certbot through apt, so that's what I'm going to do.</p><pre><code class="language-bash">sudo apt-get install certbot python-certbot-nginx python3-certbot-dns-cloudflare</code></pre><p>I have this domain under Cloudflare’s DNS servers, which include an api for DNS actions, so I can use that to do the validation that certbot requires. I create a file called <code>ssl.sh</code> in my home directory which is what I will use in order to generate the certificate.</p><!--kg-card-begin: html--><script src="https://gist.github.com/Roxedus/d400fe30e5964d253b7d0696ea1abd46.js?file=ssl.sh"></script><!--kg-card-end: html--><p>The cf-creds.ini file looks something like this</p><figure class="kg-card kg-code-card"><pre><code class="language-ini"># Cloudflare API credentials used by Certbot
+dns_cloudflare_email = 
+dns_cloudflare_api_key = </code></pre><figcaption>cf-creds.ini</figcaption></figure><p>On the first run it will ask you to create an "account". This is because Let's-encrypt wants to send you reminder emails when your certificate is about to expire.</p><p>We also need to generate a dhparam file in order for Nginx to handle ssl requests. </p><pre><code class="language-bash">sudo openssl dhparam -out /etc/nginx/ssl/dhparam-2048.pem 2048</code></pre><p>I have a certificate!</p><h2 id="configuring-nginx">Configuring Nginx</h2><p>Now I am ready to be opening our Ghost instance to the public, and get to use it.</p><p>This is the Nginx configuration I ended up with, after playing with it for a good 40 minutes. </p><!--kg-card-begin: html--><script src="https://gist.github.com/Roxedus/d400fe30e5964d253b7d0696ea1abd46.js?file=nonsense.fyi.conf"></script><!--kg-card-end: html--><p>This is the file I symlinked in the Nginx guide from Digital Ocean. </p><p>Next up is creating the <code>ssl/nonsense.fyi.conf</code> file. I have mine in the same folder as the dhparam file I generated earlier. </p><!--kg-card-begin: html--><script src="https://gist.github.com/Roxedus/d400fe30e5964d253b7d0696ea1abd46.js?file=ssl_nonsense.fyi.conf"></script><!--kg-card-end: html--><p><br><strong>I left out my ciphers due to how the gist integration works. <a href="https://www.acunetix.com/blog/articles/tls-ssl-cipher-hardening/">Check this link</a> </strong><br><br><br>Now I check my Nginx configuration with sudo nginx -t, and hopefully don't get any errors. Once I have resolved all the errors, I reload Nginx with sudo nginx reload.</p><p>I am now ready to create awesome content</p>]]></content:encoded></item></channel></rss>
