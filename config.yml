@@ -1,0 +1,101 @@
+baseURL: "https://nonsense.fyi/"
+title: nonsense.fyi
+paginate: 5
+theme:
+  - PaperMod
+  - plausible-hugo
+
+enableRobotsTXT: true
+buildDrafts: true
+buildFuture: false
+buildExpired: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  env: dev
+  title: "{{ .Site.title }}"
+  description: "Just Nonsesne, for your information"
+  keywords: [Blog]
+  author: Roxedus
+  DateFormat: "January 2, 2006"
+  defaultTheme: auto # dark, light
+  disableThemeToggle: false
+
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  comments: true
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: true
+
+  label:
+    text: "Home"
+    iconHeight: 35
+
+  socialIcons:
+    - name: twitter
+      url: "https://twitter.com/roxedus"
+    - name: github
+      url: "https://github.com/Roxedus"
+
+  cover:
+    relative: true
+    linkFullImages: true
+
+  editPost:
+    URL: "https://github.com/Roxedus/nonsense.fyi/edit/main/content"
+    Text: "Correct my grammar!" # edit text
+    appendFilePath: true # to append file path to Edit link
+
+  # for search
+  # https://fusejs.io/api/options.html
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+
+  profileMode:
+    enabled: false
+
+  homeInfoParams:
+    Title: "Roxedus"
+    Content: >
+      I sometimes blog.
+
+
+      [Website](https://roxedus.dev/)
+
+  plausible:
+    enable: true
+    domain: "{{ .Site.title }}"
+    gitstar: false
+    custom_js_domain: hosted.roxedus.net
+
+menu:
+  main:
+    - identifier: tags
+      name: tags
+      url: /tags/
+      weight: 20
+    - name: Search
+      url: search/
+      weight: 10
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON

@@ -1,0 +1,44 @@
+name: Deploy to Github Pages
+
+on:
+  push:
+    paths:
+      - "site/**"
+      - ".github/workflows/deploy-hugo.yml"
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2.5.0
+        with:
+          hugo-version: "0.87.0"
+          extended: true
+
+      - name: Set env to production
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval -i '.params.env = "production"' 'config.yml'
+
+      - name: Don't publish drafts
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval -i '.buildDrafts = "false"' 'config.yml'
+
+      - name: Build
+        run: hugo --minify
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          cname: nonsense.fyi
