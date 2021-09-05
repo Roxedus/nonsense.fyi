@@ -1,4 +1,3 @@
 User-agent: *
+Disallow:
 Sitemap: https://nonsense.fyi/sitemap.xml
-Disallow: /ghost/
-Disallow: /p/
