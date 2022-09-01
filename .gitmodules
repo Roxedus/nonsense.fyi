@@ -1,6 +1,3 @@
-[submodule "themes/plausible-hugo"]
-	path = themes/plausible-hugo
-	url = https://github.com/divinerites/plausible-hugo.git
 [submodule "themes/PaperMod"]
 	path = themes/PaperMod
 	url = https://github.com/adityatelange/hugo-PaperMod.git

@@ -3,7 +3,6 @@ title: nonsense.fyi
 paginate: 5
 theme:
   - PaperMod
-  - plausible-hugo
 
 enableRobotsTXT: true
 buildDrafts: true
@@ -16,7 +15,7 @@ minify:
 
 params:
   env: dev
-  title: nonsense.fyi
+  title: "{{ .Site.title }}"
   description: "Just Nonsesne, for your information"
   keywords: [Blog]
   author: Roxedus
@@ -77,12 +76,6 @@ params:
 
 
       [Website](https://roxedus.dev/)
-
-  plausible:
-    enable: true
-    domain: "{{ .Site.title }}"
-    gitstar: false
-    custom_js_domain: hosted.roxedus.net
 
 menu:
   main:
