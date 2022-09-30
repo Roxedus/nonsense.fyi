@@ -30,6 +30,9 @@ jobs:
         with:
           cmd: yq eval -i '.buildDrafts = "false"' 'config.yml'
 
+      - name: Generate highlight CSS
+        run: hugo gen chromastyles --style fruity --highlightStyle "bg:#7782bb6b" > assets/css/extended/fruity.css
+
       - name: Build
         run: hugo --minify
 

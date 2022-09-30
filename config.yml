@@ -36,6 +36,18 @@ params:
   showtoc: false
   tocopen: true
 
+  assets:
+    disableHLJS: true
+
+markup:
+  highlight:
+    anchorLineNos: false
+    codeFences: true
+    lineNos: true
+    tabWidth: 4
+    noClasses: false
+    style: fruity
+
   label:
     text: "Home"
     iconHeight: 35
