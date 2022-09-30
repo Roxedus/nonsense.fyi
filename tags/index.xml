@@ -5,13 +5,22 @@
     <link>https://nonsense.fyi/tags/</link>
     <description>Recent content in Tags on nonsense.fyi</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 02 Jun 2020 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 01 Oct 2022 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Automation</title>
       <link>https://nonsense.fyi/tags/automation/</link>
-      <pubDate>Tue, 02 Jun 2020 00:00:00 +0200</pubDate>
+      <pubDate>Sat, 01 Oct 2022 00:00:00 +0200</pubDate>
       
       <guid>https://nonsense.fyi/tags/automation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linuxserver.io</title>
+      <link>https://nonsense.fyi/tags/linuxserver.io/</link>
+      <pubDate>Sat, 01 Oct 2022 00:00:00 +0200</pubDate>
+      
+      <guid>https://nonsense.fyi/tags/linuxserver.io/</guid>
       <description></description>
     </item>
     

@@ -5,7 +5,16 @@
     <link>https://nonsense.fyi/</link>
     <description>Recent content on nonsense.fyi</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 02 Jun 2020 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 01 Oct 2022 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Templating templates with templates</title>
+      <link>https://nonsense.fyi/posts/templating-templates-with-templates/</link>
+      <pubDate>Sat, 01 Oct 2022 00:00:00 +0200</pubDate>
+      
+      <guid>https://nonsense.fyi/posts/templating-templates-with-templates/</guid>
+      <description>When you go too far with Jinja</description>
+    </item>
+    
     <item>
       <title>Deploying Loki and Promtail Together With the TIG Stack</title>
       <link>https://nonsense.fyi/posts/deploying-loki-and-promtail-together-with-the-tig-stack/</link>
