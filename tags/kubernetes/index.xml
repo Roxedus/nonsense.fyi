@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Kubernetes on nonsense.fyi</title>
+    <link>https://nonsense.fyi/tags/kubernetes/</link>
+    <description>Recent content in Kubernetes on nonsense.fyi</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Road to CKAD</title>
+      <link>https://nonsense.fyi/posts/road-to-ckad/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0200</pubDate>
+      
+      <guid>https://nonsense.fyi/posts/road-to-ckad/</guid>
+      <description>My adventure in Certifying myself in Kubernetes</description>
+    </item>
+    
+  </channel>
+</rss>
