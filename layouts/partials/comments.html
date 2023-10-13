@@ -1,3 +1,6 @@
+{{ if .Site.IsServer }}
+<p>Comment section goes here</p>
+{{ else if not .Site.IsServer }}
 <script src="https://giscus.app/client.js"
         data-repo="Roxedus/nonsense.fyi"
         data-repo-id="MDEwOlJlcG9zaXRvcnkyNTkxMzY1NDE="
@@ -10,3 +13,4 @@
         crossorigin="anonymous"
         async>
 </script>
+{{ end }}
