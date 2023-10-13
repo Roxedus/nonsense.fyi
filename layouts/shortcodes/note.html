@@ -1,0 +1,5 @@
+{{ $_hugo_config := `{ "version": 1 }` }}
+<div class="admonition {{ .Get "type" | default "note" | lower }}">
+    {{ if .Get "title" }}<div class="title">{{ .Get "title" }}</div>{{ end }}
+    <div class="content">{{ string .Inner | markdownify }}</div>
+</div>
