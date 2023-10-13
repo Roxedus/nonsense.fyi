@@ -15,7 +15,7 @@ minify:
 
 params:
   env: dev
-  title: "{{ .Site.title }}"
+  title: Nonsense, For Your Information
   description: "Just Nonsesne, for your information"
   keywords: [Blog]
   author: Roxedus
