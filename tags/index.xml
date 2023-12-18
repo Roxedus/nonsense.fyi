@@ -1,56 +1,47 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on nonsense.fyi</title>
     <link>https://nonsense.fyi/tags/</link>
     <description>Recent content in Tags on nonsense.fyi</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0200</lastBuildDate>
+    <atom:link href="https://nonsense.fyi/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Certification</title>
       <link>https://nonsense.fyi/tags/certification/</link>
       <pubDate>Fri, 13 Oct 2023 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/tags/certification/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Homelab</title>
       <link>https://nonsense.fyi/tags/homelab/</link>
       <pubDate>Fri, 13 Oct 2023 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/tags/homelab/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Kubernetes</title>
       <link>https://nonsense.fyi/tags/kubernetes/</link>
       <pubDate>Fri, 13 Oct 2023 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/tags/kubernetes/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Automation</title>
       <link>https://nonsense.fyi/tags/automation/</link>
       <pubDate>Sat, 01 Oct 2022 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/tags/automation/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Linuxserver.io</title>
       <link>https://nonsense.fyi/tags/linuxserver.io/</link>
       <pubDate>Sat, 01 Oct 2022 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/tags/linuxserver.io/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

@@ -1,38 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on nonsense.fyi</title>
     <link>https://nonsense.fyi/posts/</link>
     <description>Recent content in Posts on nonsense.fyi</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0200</lastBuildDate><atom:link href="https://nonsense.fyi/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0200</lastBuildDate>
+    <atom:link href="https://nonsense.fyi/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Road to CKAD</title>
       <link>https://nonsense.fyi/posts/road-to-ckad/</link>
       <pubDate>Fri, 13 Oct 2023 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/posts/road-to-ckad/</guid>
       <description>My adventure in Certifying myself in Kubernetes</description>
     </item>
-    
     <item>
       <title>Templating templates with templates</title>
       <link>https://nonsense.fyi/posts/templating-templates-with-templates/</link>
       <pubDate>Sat, 01 Oct 2022 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/posts/templating-templates-with-templates/</guid>
       <description>When you go too far with Jinja</description>
     </item>
-    
     <item>
       <title>Deploying Loki and Promtail Together With the TIG Stack</title>
       <link>https://nonsense.fyi/posts/deploying-loki-and-promtail-together-with-the-tig-stack/</link>
       <pubDate>Tue, 02 Jun 2020 00:00:00 +0200</pubDate>
-      
       <guid>https://nonsense.fyi/posts/deploying-loki-and-promtail-together-with-the-tig-stack/</guid>
       <description>How to set up Loki, Promtail, Telegraf and Grafana to visualize logs and system stats.</description>
     </item>
-    
   </channel>
 </rss>
