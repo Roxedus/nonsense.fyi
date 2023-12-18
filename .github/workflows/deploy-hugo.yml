@@ -1,10 +1,8 @@
 name: Deploy to Github Pages
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,29 +11,24 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2.6.0
+        id: install
         with:
-          hugo-version: "0.104.0"
+          hugo-version: "0.121.1"
           extended: true
-
       - name: Set env to production
         uses: mikefarah/yq@master
         with:
           cmd: yq eval -i '.params.env = "production"' 'config.yml'
-
       - name: Don't publish drafts
         uses: mikefarah/yq@master
         with:
           cmd: yq eval -i '.buildDrafts = "false"' 'config.yml'
-
       - name: Generate highlight CSS
         run: hugo gen chromastyles --style fruity --highlightStyle "bg:#7782bb6b" > assets/css/extended/fruity.css
-
       - name: Build
         run: hugo --minify
-
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
