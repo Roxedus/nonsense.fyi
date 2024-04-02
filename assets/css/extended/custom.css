@@ -1,8 +1,8 @@
 .chroma {
     background-color: unset !important;
-  }
+}
 
-  .admonition {
+.admonition {
     padding: 15px;
     margin-bottom: 21px;
     border-left: 10px solid transparent;
@@ -60,4 +60,17 @@
 
 .important .title {
     color: red;
+}
+
+#current-visitors-container {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    opacity: 0.3;
+    font-size: 1.7em;
+    color: var(--tertiary);
+}
+
+#current-visitors-container:hover {
+    opacity: 1;
 }
