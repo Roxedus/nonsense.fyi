@@ -53,8 +53,6 @@ markup:
     iconHeight: 35
 
   socialIcons:
-    - name: twitter
-      url: "https://twitter.com/roxedus"
     - name: github
       url: "https://github.com/Roxedus"
 
@@ -84,7 +82,7 @@ markup:
   homeInfoParams:
     Title: "Roxedus"
     Content: >
-      I sometimes blog.
+      I sometimes write words.
 
 
       [Website](https://roxedus.dev/)
