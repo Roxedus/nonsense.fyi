@@ -4,7 +4,7 @@
     <title>nonsense.fyi</title>
     <link>https://nonsense.fyi/</link>
     <description>Recent content on nonsense.fyi</description>
-    <generator>Hugo -- 0.125.7</generator>
+    <generator>Hugo -- 0.148.1</generator>
     <language>en</language>
     <lastBuildDate>Fri, 28 Feb 2025 00:00:00 +0200</lastBuildDate>
     <atom:link href="https://nonsense.fyi/index.xml" rel="self" type="application/rss+xml" />
@@ -13,8 +13,10 @@
       <link>https://nonsense.fyi/posts/setting-up-tpm2-backed-luks-at-root-with-secure-boot-in-ubuntu/</link>
       <pubDate>Fri, 28 Feb 2025 00:00:00 +0200</pubDate>
       <guid>https://nonsense.fyi/posts/setting-up-tpm2-backed-luks-at-root-with-secure-boot-in-ubuntu/</guid>
-      <description>As part of a new homeserver build I plan to finish this year, I wanted to look into where the ecosystem is regarding LUKS volumes unlocked by TPM. This was sparked from how seamless it was when I set up my framework last year.
-I gave my self a few conditions for this setup I would like to meet. The first one is Secure boot, it&amp;rsquo;s 2025, I should be able to do this by now, I also became aware of tooling that makes this easier.</description>
+      <description>&lt;p&gt;As part of a new homeserver build I plan to finish this year, I wanted to look into where the ecosystem is regarding LUKS volumes unlocked by TPM. This was sparked from how seamless it was when I set up my framework last year.&lt;/p&gt;
+&lt;p&gt;I gave my self a few conditions for this setup I would like to meet.
+The first one is Secure boot, it&amp;rsquo;s 2025, I should be able to do this by now, I also became aware of tooling that makes this easier.
+I would like this setup to use sdboot, for really no particular reason than to try something else than grub. If I could fulfill this, UKI could also be a additional implementation detail.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Road to CKAD</title>

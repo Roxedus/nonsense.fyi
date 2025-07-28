@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://nonsense.fyi/</loc>
+    <lastmod>2025-07-28T00:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://nonsense.fyi/posts/</loc>
+    <lastmod>2025-07-28T00:00:00+02:00</lastmod>
+  </url><url>
     <loc>https://nonsense.fyi/tags/foxware/</loc>
     <lastmod>2025-02-28T00:00:00+02:00</lastmod>
   </url><url>
@@ -9,12 +15,6 @@
     <lastmod>2025-02-28T00:00:00+02:00</lastmod>
   </url><url>
     <loc>https://nonsense.fyi/tags/luks/</loc>
-    <lastmod>2025-02-28T00:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://nonsense.fyi/</loc>
-    <lastmod>2025-02-28T00:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://nonsense.fyi/posts/</loc>
     <lastmod>2025-02-28T00:00:00+02:00</lastmod>
   </url><url>
     <loc>https://nonsense.fyi/tags/sdboot/</loc>
