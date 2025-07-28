@@ -15,7 +15,7 @@ jobs:
         uses: peaceiris/actions-hugo@v3.0.0
         id: install
         with:
-          hugo-version: "0.125.7"
+          hugo-version: "0.148.1"
           extended: true
       - name: Set env to production
         uses: mikefarah/yq@master
