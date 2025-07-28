@@ -1,7 +1,7 @@
 ---
 title: "Road to Gold"
 date: 2025-07-28T00:00:00+02:00
-draft: true
+draft: false
 tags: ["Kubernetes", "Kubestronaut", "Certification"]
 author: "Simen Røstvik"
 ShowToc: true
