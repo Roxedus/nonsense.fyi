@@ -1,0 +1,7 @@
+[tools]
+"aqua:gohugoio/hugo/hugo-extended" = "latest"
+
+[tasks.hugo]
+dir = "{{config_root }}"
+description = "Run hugo"
+run = "hugo server -w"

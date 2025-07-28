@@ -1,6 +1,5 @@
 baseURL: "https://nonsense.fyi/"
 title: nonsense.fyi
-paginate: 5
 theme:
   - PaperMod
 
