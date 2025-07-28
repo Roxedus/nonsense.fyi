@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Kubernetes on nonsense.fyi</title>
-    <link>https://nonsense.fyi/tags/kubernetes/</link>
-    <description>Recent content in Kubernetes on nonsense.fyi</description>
+    <title>Kubestronaut on nonsense.fyi</title>
+    <link>https://nonsense.fyi/tags/kubestronaut/</link>
+    <description>Recent content in Kubestronaut on nonsense.fyi</description>
     <generator>Hugo -- 0.148.1</generator>
     <language>en</language>
     <lastBuildDate>Mon, 28 Jul 2025 00:00:00 +0200</lastBuildDate>
-    <atom:link href="https://nonsense.fyi/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://nonsense.fyi/tags/kubestronaut/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Road to Gold</title>
       <link>https://nonsense.fyi/posts/road-to-gold/</link>
       <pubDate>Mon, 28 Jul 2025 00:00:00 +0200</pubDate>
       <guid>https://nonsense.fyi/posts/road-to-gold/</guid>
       <description>My road to Golden Kubestronaut</description>
-    </item>
-    <item>
-      <title>Road to CKAD</title>
-      <link>https://nonsense.fyi/posts/road-to-ckad/</link>
-      <pubDate>Fri, 13 Oct 2023 00:00:00 +0200</pubDate>
-      <guid>https://nonsense.fyi/posts/road-to-ckad/</guid>
-      <description>My adventure in Certifying myself in Kubernetes</description>
     </item>
   </channel>
 </rss>
