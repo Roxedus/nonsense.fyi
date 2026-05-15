@@ -1,0 +1,86 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        "mergeConfidence:all-badges",
+        "schedule:weekly",
+        "helpers:pinGitHubActionDigests",
+        ":semanticCommits",
+    ],
+    "suppressNotifications": [
+        "prIgnoreNotification"
+    ],
+    "npm": {
+        "enabled": false
+    },
+    "packageRules": [
+        {
+            "description": "Only create GHA PRs after a week",
+            "matchManagers": [
+                "github-actions"
+            ],
+            "matchPackageNames": [
+                "!actions/**",
+                "!**renovate**"
+            ],
+            "minimumReleaseAge": "7 days"
+        },
+        {
+            "description": "Auto merge Github Actions",
+            "matchManagers": [
+                "github-actions"
+            ],
+            "matchPackageNames": [
+                "actions/**"
+            ],
+            "automerge": true,
+            "automergeType": "pr",
+            "rebaseWhen": "behind-base-branch",
+            "ignoreTests": true,
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "digest"
+            ]
+        },
+        {
+            "description": "Mise GitHub: Use package name as user/org if no user/org",
+            "matchFileNames": [
+                ".mise.toml",
+                "mise.toml"
+            ],
+            "matchDatasources": [
+                "github-releases",
+                "github-tags"
+            ],
+            "overridePackageName": "{{#if (lookup (split packageName '/') 1)}}{{packageName}}{{else if (lookup (split packageName ':') 1)}}{{ lookup (split packageName ':') 1 }}/{{ lookup (split packageName ':') 1 }}{{else}}{{packageName}}/{{packageName}}{{/if}}"
+        },
+        {
+            "matchFileNames": [
+                ".mise.toml",
+                "mise.toml"
+            ],
+            "addLabels": [
+                "renovate/mise"
+            ]
+        },
+        {
+            "description": "Auto merge all Mise versions",
+            "matchFileNames": [
+                ".mise.toml",
+                "mise.toml"
+            ],
+            "matchPackageNames": [
+                "*"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "digest"
+            ],
+            "automerge": true,
+            "automergeType": "pr",
+            "rebaseWhen": "behind-base-branch"
+        },
+    ]
+}
