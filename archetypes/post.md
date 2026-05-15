@@ -4,7 +4,6 @@ date: {{ .Date }}
 draft: true
 tags: ["Blog"]
 author: "Roxedus"
-draft: true
 description: "Desc Text."
 canonicalURL: "{{ .Site.BaseURL }}posts/{{ replace .Name " " "-" }}"
 cover:

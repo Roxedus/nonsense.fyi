@@ -1,7 +1,6 @@
 ---
 title: "Templating templates with templates"
 date: 2022-10-01T00:00:00+02:00
-draft: true
 tags: ["Automation", "Linuxserver.io"]
 author: "Roxedus"
 draft: false

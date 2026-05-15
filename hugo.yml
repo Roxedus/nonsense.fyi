@@ -1,7 +1,9 @@
 baseURL: "https://nonsense.fyi/"
 title: nonsense.fyi
-theme:
-  - PaperMod
+
+module:
+  imports:
+    - path: github.com/adityatelange/hugo-PaperMod
 
 enableRobotsTXT: true
 buildDrafts: true

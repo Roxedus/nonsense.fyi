@@ -1,7 +1,6 @@
 ---
 title: "Deploying Loki and Promtail Together With the TIG Stack"
 date: 2020-06-02T00:00:00+02:00
-draft: true
 tags: ["Automation"]
 aliases: ["/deploying-loki-and-promtail-together-with-the-tig-stack"]
 author: "Roxedus"

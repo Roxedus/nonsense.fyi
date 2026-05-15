@@ -1,3 +1,5 @@
-resources/*
-public/*
-assets/css/extended/fruity.css
+resources/
+public/
+node_modules/
+assets/jsconfig.json
+badges.*
