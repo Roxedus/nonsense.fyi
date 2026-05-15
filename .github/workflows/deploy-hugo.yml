@@ -7,22 +7,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
           fetch-depth: 0
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3.0.0
+        uses: peaceiris/actions-hugo@75d2e84710de30f6ff7268e08f310b60ef14033f # v3.0.0
         id: install
         with:
           hugo-version: "0.148.1"
           extended: true
       - name: Set env to production
-        uses: mikefarah/yq@master
+        uses: mikefarah/yq@8f3291d3165497b360b8ffee3c887624bb6fa1cf # master
         with:
           cmd: yq eval -i '.params.env = "production"' 'hugo.yml'
       - name: Don't publish drafts
-        uses: mikefarah/yq@master
+        uses: mikefarah/yq@8f3291d3165497b360b8ffee3c887624bb6fa1cf # master
         with:
           cmd: yq eval -i '.buildDrafts = "false"' 'hugo.yml'
       - name: Generate highlight CSS
@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: hugo --minify
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4.0.0
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
