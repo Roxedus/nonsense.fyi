@@ -10,6 +10,20 @@ cover:
   image: "images/captain.jpg"
   alt: "A captain overseeing his ship"
   source: https://unsplash.com/photos/tOJDsuU9MlE
+glossary:
+  cni:
+    short: Called Network Plugin in the Kubernetes docs, a component that handles networking between pods.
+    name: Container Network Interface
+    link: https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/
+  argo:
+    short: Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes.
+    name: Argo CD
+    link: https://argoproj.github.io/
+  cloudflared:
+    short: Software responsible for receiving the traffic from a Cloudflare tunnel.
+    name: Cloudflared
+    link: https://github.com/cloudflare/cloudflared
+    linkLocation: GitHub
 ---
 
 ## So I took some certs
@@ -39,9 +53,9 @@ For some unrelated infrastructure, I set up Proxmox. I attempted to put most of 
 
 Because sourcing additional Raspberry PI's was an impossible task (and still isn't easy), I thought "Hey, my Proxmox host is only doing Home-Assistant right know, I can squeeze more onto it".
 
-Since I am who I am, I decided to dabble in something new, enter Linux Containers(lxc)[^1].
+Since I am who I am, I decided to dabble in something new, enter {{< glossary "LXC" >}}Linux Containers (lxc){{< /glossary >}}.
 
-The reason for researching this method is straightforward; VMs are heavy, OCI[^2] containers are light. I needed something in between.
+The reason for researching this method is straightforward; VMs are heavy, {{< glossary "OCI-Containers" >}}OCI containers{{< /glossary >}} are light. I needed something in between.
 This host is limited on resources, but not starved for them. Therefore avoiding running another kernel and subsystem would be preferred, this ruled out Virtual Machines.
 Another option I am very comfortable with, is Docker. However, (stock) Kubernetes really wants a fully-fledged init system running and I am not crazy enough to run a complete Systemd instance in a Docker container.
 
@@ -99,7 +113,7 @@ The command I ended up using was
 kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=SystemVerification
 ```
 
-In the output of the init command, I made a note of the join command. The output also tell you that now time is the time to get a CNI[^3], once again I went the easy route with [Flannel](https://github.com/flannel-io/flannel), as it just works out of the box. For my next iteration I am considering [Weave](https://github.com/weaveworks/weave), due to it supporting network policies.
+In the output of the init command, I made a note of the join command. The output also tell you that now time is the time to get a {{< glossary "cni" >}}CNI{{< /glossary >}}, once again I went the easy route with [Flannel](https://github.com/flannel-io/flannel), as it just works out of the box. For my next iteration I am considering [Weave](https://github.com/weaveworks/weave), due to it supporting network policies.
 
 The output helpfully gives you a copy-paste of the commands you need to do if you want to interface with the cluster outside of the root account, the file in this example is also the file you want to have on the computer you plan to manage the cluster by(or you can already here look at creating a dedicated certificate, rather than the one Kubeadm generates).
 
@@ -107,7 +121,7 @@ The next step was running the command with the join token I noted earlier on the
 
 ## GitOps
 
-Because I also had video lectures with practice tests I was doing at the same time, I were already comfortable with kubectl and dealing with bare manifests. I had no desire to do that in this lab, I therefore dove head first into Helm[^4] and Argo CD[^5].
+Because I also had video lectures with practice tests I was doing at the same time, I were already comfortable with kubectl and dealing with bare manifests. I had no desire to do that in this lab, I therefore dove head first into {{< glossary "helm" >}}Helm{{< /glossary >}} and {{< glossary "argo" >}}Argo CD{{< /glossary >}}.
 
 {{< note type="tip" >}}
 This section is going to be a bit messy, as I will be linking different commits, from a git-tree that has been rewritten( to remove my previous attempt at trying this, having no idea what I was doing). This is why the first commit has a structure, and a bunch of files.
@@ -148,7 +162,7 @@ Any good homelab these days will result in some webguis you may want to use in o
 
 The first and simple solution I had in mind was using Cloudflare tunnels to handle external traffic. This was working, but relied on me manually creating tunnels, and cloudflare being in charge of managing TLS, which I don't love.
 
-The next solution is based on a neat project, [justmiles/traefik-cloudflare-tunnel](https://github.com/justmiles/traefik-cloudflare-tunnel/tree/master). It does exactly the steps I previously did manually, but this does it programmatically, and by reading the Traefik routes. Being on arm64 really started hurting here, as cloudflared[^6] at the time did not build images for arm (Traefik-cloudflare-tunnel still doesn't, February 2023). This lead to another tangent, as I cobbled together some build stuff using Github Actions and QEMU to build these projects for arm, all while not modifying the source. This was all done using docker-bake, in my [pipelines repo](https://github.com/Roxedus/pipelines).
+The next solution is based on a neat project, [justmiles/traefik-cloudflare-tunnel](https://github.com/justmiles/traefik-cloudflare-tunnel/tree/master). It does exactly the steps I previously did manually, but this does it programmatically, and by reading the Traefik routes. Being on arm64 really started hurting here, as {{< glossary "cloudflared" >}}cloudflared{{< /glossary >}} at the time did not build images for arm (Traefik-cloudflare-tunnel still doesn't, February 2023). This lead to another tangent, as I cobbled together some build stuff using Github Actions and QEMU to build these projects for arm, all while not modifying the source. This was all done using docker-bake, in my [pipelines repo](https://github.com/Roxedus/pipelines).
 
 **None of these solutions is using the ingress mechanism in Kubernetes, so I kept on looking.**
 
@@ -221,10 +235,3 @@ I had one goal for the summer, which was CKS, I was mentally prepared for a mont
 I spent a couple of weeks on going trough the courses and labs, before I adventured into KillerShell, where I once again was happy with my results. I scheduled and took the exam the same week as I went trough KillerShell.
 
 While I skipped a whole task in the exam, I still managed to pass this too.
-
-[^1]: Linux Containers is an operating-system-level virtualization method for running multiple isolated Linux systems (containers) on a control host using a single Linux kernel. [Wikipedia](https://en.wikipedia.org/wiki/LXC)
-[^2]: Initiative created by Docker to define standards for multiple aspects regarding running containers. [OpenContainers](https://opencontainers.org/)
-[^3]: Called Network Plugin in the [Kubernetes docs](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/), a component that handles networking between pods.
-[^4]: The package manager for Kubernetes. [helm.sh](https://helm.sh/)
-[^5]: Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes. [argoproj.github.io](https://argoproj.github.io/)
-[^6]: Software responsible for receiving the traffic from a Cloudflare tunnel. [Github](https://github.com/cloudflare/cloudflared)
