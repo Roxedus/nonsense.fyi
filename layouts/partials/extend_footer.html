@@ -1,3 +1,10 @@
 {{ if not hugo.IsServer }}
 <div id="current-visitors-container"></div>
 {{ end }}
+{{ if .Store.Get "hasMermaid" }}
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+    let config = { startOnLoad: true, darkMode: true, htmlLabels: true, theme: "dark" };
+    mermaid.initialize(config);
+</script>
+{{ end }}
