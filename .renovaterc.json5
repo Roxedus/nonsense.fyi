@@ -1,121 +1,121 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "config:recommended",
-        "mergeConfidence:all-badges",
-        "schedule:weekly",
-        "helpers:pinGitHubActionDigests",
-        ":semanticCommits",
+    $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+    extends: [
+        'config:recommended',
+        'mergeConfidence:all-badges',
+        'schedule:weekly',
+        'helpers:pinGitHubActionDigests',
+        ':semanticCommits',
     ],
-    "suppressNotifications": [
-        "prIgnoreNotification"
+    suppressNotifications: [
+        'prIgnoreNotification',
     ],
-    "npm": {
-        "enabled": false
+    npm: {
+        enabled: false,
     },
-    "packageRules": [
+    packageRules: [
         {
-            "description": "Only create GHA PRs after a week",
-            "matchManagers": [
-                "github-actions"
+            description: 'Only create GHA PRs after a week',
+            matchManagers: [
+                'github-actions',
             ],
-            "matchPackageNames": [
-                "!actions/**",
-                "!**renovate**"
+            matchPackageNames: [
+                '!actions/**',
+                '!**renovate**',
             ],
-            "minimumReleaseAge": "7 days"
+            minimumReleaseAge: '7 days',
         },
         {
-            "description": "Auto merge Github Actions",
-            "matchManagers": [
-                "github-actions"
+            description: 'Auto merge Github Actions',
+            matchManagers: [
+                'github-actions',
             ],
-            "matchPackageNames": [
-                "actions/**"
+            matchPackageNames: [
+                'actions/**',
             ],
-            "automerge": true,
-            "automergeType": "pr",
-            "rebaseWhen": "behind-base-branch",
-            "ignoreTests": true,
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "digest"
-            ]
+            automerge: true,
+            automergeType: 'pr',
+            rebaseWhen: 'behind-base-branch',
+            ignoreTests: true,
+            matchUpdateTypes: [
+                'minor',
+                'patch',
+                'digest',
+            ],
         },
         {
-            "description": "Mise GitHub: Use package name as user/org if no user/org",
-            "matchFileNames": [
-                ".mise.toml",
-                "mise.toml"
+            description: 'Mise GitHub: Use package name as user/org if no user/org',
+            matchFileNames: [
+                '.mise.toml',
+                'mise.toml',
             ],
-            "matchDatasources": [
-                "github-releases",
-                "github-tags"
+            matchDatasources: [
+                'github-releases',
+                'github-tags',
             ],
-            "overridePackageName": "{{#if (lookup (split packageName '/') 1)}}{{packageName}}{{else if (lookup (split packageName ':') 1)}}{{ lookup (split packageName ':') 1 }}/{{ lookup (split packageName ':') 1 }}{{else}}{{packageName}}/{{packageName}}{{/if}}"
+            overridePackageName: "{{#if (lookup (split packageName '/') 1)}}{{packageName}}{{else if (lookup (split packageName ':') 1)}}{{ lookup (split packageName ':') 1 }}/{{ lookup (split packageName ':') 1 }}{{else}}{{packageName}}/{{packageName}}{{/if}}",
         },
         {
-            "matchFileNames": [
-                ".mise.toml",
-                "mise.toml"
+            matchFileNames: [
+                '.mise.toml',
+                'mise.toml',
             ],
-            "addLabels": [
-                "renovate/mise"
-            ]
+            addLabels: [
+                'renovate/mise',
+            ],
         },
         {
-            "description": "Auto merge all Mise versions",
-            "matchFileNames": [
-                ".mise.toml",
-                "mise.toml"
+            description: 'Auto merge all Mise versions',
+            matchFileNames: [
+                '.mise.toml',
+                'mise.toml',
             ],
-            "matchPackageNames": [
-                "*"
+            matchPackageNames: [
+                '*',
             ],
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "digest"
+            matchUpdateTypes: [
+                'minor',
+                'patch',
+                'digest',
             ],
-            "automerge": true,
-            "automergeType": "pr",
-            "rebaseWhen": "behind-base-branch"
+            automerge: true,
+            automergeType: 'pr',
+            rebaseWhen: 'behind-base-branch',
         },
         {
-            "description": [
-                "Hugo Group"
+            description: [
+                'Hugo Group',
             ],
-            "groupName": "Hugo",
-            "matchDatasources": [
-                "mise",
-                "github-tags",
-                "github-releases"
+            groupName: 'Hugo',
+            matchDatasources: [
+                'mise',
+                'github-tags',
+                'github-releases',
             ],
-            "versioning": "semver",
-            "group": {
-                "commitMessageTopic": "{{{groupName}}} group"
+            versioning: 'semver',
+            group: {
+                commitMessageTopic: '{{{groupName}}} group',
             },
-            "separateMinorPatch": true,
-            "matchPackageNames": [
-                "/gohugoio/hugo/"
-            ]
-        }
+            separateMinorPatch: true,
+            matchPackageNames: [
+                '/gohugoio/hugo/',
+            ],
+        },
     ],
-    "customManagers": [
-    {
-        "customType": "regex",
-        "description": [
-            "Process custom dependencies"
-        ],
-        "fileMatch": [
-            "\\.ya?ml$",
-        ],
-        "matchStrings": [
-            "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)",
-            "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)"
-        ],
-        "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
-        }
+    customManagers: [
+        {
+            customType: 'regex',
+            description: [
+                'Process custom dependencies',
+            ],
+            managerFilePatterns: [
+                '/\\.ya?ml$/',
+            ],
+            matchStrings: [
+                'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)',
+                'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)',
+            ],
+            datasourceTemplate: '{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}',
+        },
     ],
 }
