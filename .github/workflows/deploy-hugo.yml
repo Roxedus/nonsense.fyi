@@ -16,7 +16,7 @@ jobs:
         id: install
         with:
           # renovate: datasource=github-releases depName=gohugoio/hugo
-          hugo-version: 0.148.1
+          hugo-version: 0.164.0
           extended: true
       - name: Set env to production
         uses: mikefarah/yq@8f3291d3165497b360b8ffee3c887624bb6fa1cf # master
