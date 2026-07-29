@@ -1,6 +1,6 @@
 [tools]
 "aqua:gohugoio/hugo/hugo-extended" = "0.164.0"
-go = "1.26.3"
+go = "1.26.5"
 node = "24.18.0"
 
 [tasks.install]
