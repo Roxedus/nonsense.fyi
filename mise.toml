@@ -1,7 +1,7 @@
 [tools]
 "aqua:gohugoio/hugo/hugo-extended" = "0.164.0"
 go = "1.26.3"
-node = "24.15.0"
+node = "24.18.0"
 
 [tasks.install]
 depends = ['hugo_pack']
