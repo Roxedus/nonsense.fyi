@@ -82,5 +82,40 @@
             "automergeType": "pr",
             "rebaseWhen": "behind-base-branch"
         },
-    ]
+        {
+            "description": [
+                "Hugo Group"
+            ],
+            "groupName": "Hugo",
+            "matchDatasources": [
+                "mise",
+                "github-tags",
+                "github-releases"
+            ],
+            "versioning": "semver",
+            "group": {
+                "commitMessageTopic": "{{{groupName}}} group"
+            },
+            "separateMinorPatch": true,
+            "matchPackageNames": [
+                "/gohugoio/hugo/"
+            ]
+        }
+    ],
+    "customManagers": [
+    {
+        "customType": "regex",
+        "description": [
+            "Process custom dependencies"
+        ],
+        "fileMatch": [
+            "\\.ya?ml$",
+        ],
+        "matchStrings": [
+            "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)",
+            "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)"
+        ],
+        "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
+        }
+    ],
 }
