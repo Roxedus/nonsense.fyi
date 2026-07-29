@@ -4,7 +4,7 @@ date: 2023-10-13T00:00:00+02:00
 draft: false
 tags: ["Kubernetes", "Homelab", "Certification"]
 author: "Simen Røstvik"
-ShowToc: true
+TocOpen: true
 description: "My adventure in Certifying myself in Kubernetes"
 cover:
   image: "images/captain.jpg"

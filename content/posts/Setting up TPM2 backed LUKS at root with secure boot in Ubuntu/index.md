@@ -4,7 +4,7 @@ date: 2025-02-28T00:00:00+02:00
 draft: false
 tags: ["sdboot", "Homelab", "LUKS", "TPM", "Foxware"]
 author: "Roxedus"
-ShowToc: true
+TocOpen: true
 cover:
   image: "images/drive.jpg"
   alt: "Hard disk with a padlock behind it"

@@ -4,7 +4,7 @@ date: 2022-10-01T00:00:00+02:00
 tags: ["Automation", "Linuxserver.io"]
 author: "Roxedus"
 draft: false
-ShowToc: true
+TocOpen: true
 description: "When you go too far with Jinja"
 cover:
   image: "images/undraw_hacker_mind_lsio.svg"

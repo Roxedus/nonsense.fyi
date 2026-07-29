@@ -5,7 +5,7 @@ tags: ["Automation"]
 aliases: ["/deploying-loki-and-promtail-together-with-the-tig-stack"]
 author: "Roxedus"
 draft: false
-ShowToc: true
+TocOpen: true
 description: "How to set up Loki, Promtail, Telegraf and Grafana to visualize logs and system stats."
 canonicalURL: "https://nonsense.fyi/posts/Deploying-Loki-and-Promtail-together-with-the-TIG-stack"
 cover:
