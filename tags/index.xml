@@ -6,8 +6,22 @@
     <description>Recent content in Tags on nonsense.fyi</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 28 Jul 2025 00:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 30 Jul 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://nonsense.fyi/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ACME</title>
+      <link>https://nonsense.fyi/tags/acme/</link>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid>https://nonsense.fyi/tags/acme/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Homelab</title>
+      <link>https://nonsense.fyi/tags/homelab/</link>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid>https://nonsense.fyi/tags/homelab/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Certification</title>
       <link>https://nonsense.fyi/tags/certification/</link>
@@ -34,13 +48,6 @@
       <link>https://nonsense.fyi/tags/foxware/</link>
       <pubDate>Fri, 28 Feb 2025 00:00:00 +0200</pubDate>
       <guid>https://nonsense.fyi/tags/foxware/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Homelab</title>
-      <link>https://nonsense.fyi/tags/homelab/</link>
-      <pubDate>Fri, 28 Feb 2025 00:00:00 +0200</pubDate>
-      <guid>https://nonsense.fyi/tags/homelab/</guid>
       <description></description>
     </item>
     <item>
