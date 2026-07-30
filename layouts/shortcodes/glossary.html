@@ -1,7 +1,7 @@
 {{- $merged := collections.Merge .Page.Params.glossary .Site.Data.glossary -}}
 {{- $key := .Get 0 -}}
 {{- $entry := index $merged $key -}}
-{{- $text := .Inner | default $key | strings.TrimSpace -}}
+{{- $text := .Inner | default $key | strings.TrimSpace | transform.Markdownify -}}
 
 {{- if $entry -}}
 <span class="glossary-term" tabindex="0" data-glossary-term="{{ $key }}">{{- $text -}}<span
@@ -9,5 +9,5 @@
     $entry.link }}<a href="{{ $entry.link }}" class="tooltip-link" target="_blank">{{ $entry.linkLocation | default
       "Learn more" }}</a>{{ end}}</span></span>
 {{- else -}}
-{{- .Inner | default $entry.name| default $key -}}
+{{- $text -}}
 {{- end -}}

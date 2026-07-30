@@ -53,9 +53,9 @@ For some unrelated infrastructure, I set up Proxmox. I attempted to put most of 
 
 Because sourcing additional Raspberry PI's was an impossible task (and still isn't easy), I thought "Hey, my Proxmox host is only doing Home-Assistant right know, I can squeeze more onto it".
 
-Since I am who I am, I decided to dabble in something new, enter {{< glossary "LXC" >}}Linux Containers (lxc){{< /glossary >}}.
+Since I am who I am, I decided to dabble in something new, enter {{< glossary "lxc" >}}Linux Containers (lxc){{< /glossary >}}.
 
-The reason for researching this method is straightforward; VMs are heavy, {{< glossary "OCI-Containers" >}}OCI containers{{< /glossary >}} are light. I needed something in between.
+The reason for researching this method is straightforward; VMs are heavy, {{< glossary "oci-containers" >}}OCI containers{{< /glossary >}} are light. I needed something in between.
 This host is limited on resources, but not starved for them. Therefore avoiding running another kernel and subsystem would be preferred, this ruled out Virtual Machines.
 Another option I am very comfortable with, is Docker. However, (stock) Kubernetes really wants a fully-fledged init system running and I am not crazy enough to run a complete Systemd instance in a Docker container.
 

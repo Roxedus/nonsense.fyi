@@ -1,12 +1,16 @@
-LXC:
+lxc:
   short: "Linux Containers is an operating-system-level virtualization method for running multiple isolated Linux systems (containers) on a control host using a single Linux kernel."
+  name: "LXC"
   link: "https://en.wikipedia.org/wiki/LXC"
-OCI:
+oci:
   short: "Open Container Initiative is an open governance structure for the express purpose of creating open industry standards around container formats and runtime."
+  name: "OCI"
   link: "https://en.wikipedia.org/wiki/Open_Container_Initiative"
-OCI-Containers:
+oci-containers:
   short: "OCI containers are a standardized format for container images and runtimes, defined by the Open Container Initiative (OCI)."
+  name: "OCI Containers"
   link: "https://opencontainers.org/"
 helm:
-  short: The package manager for Kubernetes.
-  link: https://helm.sh/
+  short: "The package manager for Kubernetes."
+  name: "Helm"
+  link: "https://helm.sh/"
