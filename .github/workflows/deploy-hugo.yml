@@ -19,11 +19,11 @@ jobs:
           hugo-version: 0.164.0
           extended: true
       - name: Set env to production
-        uses: mikefarah/yq@e2f1d5ccf73239195bf92280cd47596751492449 # master
+        uses: mikefarah/yq@a814ff5166040ec745a96bddd79ee31c3a548e83 # master
         with:
           cmd: yq eval -i '.params.env = "production"' 'hugo.yml'
       - name: Don't publish drafts
-        uses: mikefarah/yq@e2f1d5ccf73239195bf92280cd47596751492449 # master
+        uses: mikefarah/yq@a814ff5166040ec745a96bddd79ee31c3a548e83 # master
         with:
           cmd: yq eval -i '.buildDrafts = "false"' 'hugo.yml'
       - name: Generate highlight CSS
